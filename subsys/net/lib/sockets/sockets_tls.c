@@ -1310,6 +1310,18 @@ static int tls_mbedtls_init(struct tls_context *context, bool is_server)
 	}
 #endif
 
+	static int try = 0;
+	if(0==(try%2)){
+			printk("## FORCING TLS1.3 %s %s %d\n", __FILE__, __FUNCTION__, __LINE__);
+			mbedtls_ssl_conf_min_version(&context->config, MBEDTLS_SSL_MAJOR_VERSION_3, MBEDTLS_SSL_MINOR_VERSION_4);
+			mbedtls_ssl_conf_max_version(&context->config, MBEDTLS_SSL_MAJOR_VERSION_3, MBEDTLS_SSL_MINOR_VERSION_4);
+	}else{
+			printk("## FORCING TLS1.2 %s %s %d\n", __FILE__, __FUNCTION__, __LINE__);
+			mbedtls_ssl_conf_min_version(&context->config, MBEDTLS_SSL_MAJOR_VERSION_3, MBEDTLS_SSL_MINOR_VERSION_3);
+			mbedtls_ssl_conf_max_version(&context->config, MBEDTLS_SSL_MAJOR_VERSION_3, MBEDTLS_SSL_MINOR_VERSION_3);
+	}
+	try++;
+
 	ret = mbedtls_ssl_setup(&context->ssl,
 				&context->config);
 	if (ret != 0) {
